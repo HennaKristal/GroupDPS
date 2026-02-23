@@ -59,22 +59,22 @@ plugin.GetOptionsPanel = function(self)
 	end
 
 	-- DPS label --
-	DPSLabel = Turbine.UI.Label();
-	DPSLabel:SetParent(optionsPanel);
-	DPSLabel:SetText("DPS Label");
-	DPSLabel:SetForeColor(color["golden"]);
-	DPSLabel:SetSize(200, 30);
-	DPSLabel:SetPosition(50, 180);
-	DPSLabelTextbox = Turbine.UI.TextBox();
-	DPSLabelTextbox:SetParent(optionsPanel);
-	DPSLabelTextbox:SetSize(240, 20);
-	DPSLabelTextbox:SetPosition(50, 200);
-	DPSLabelTextbox:SetText(textLabel);
-	DPSLabelTextbox:SetMultiline(false);
-	DPSLabelTextbox:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
-	DPSLabelTextbox:SetFont(Turbine.UI.Lotro.Font.Verdana14);
-	DPSLabelTextbox:SetForeColor(color["black"]);
-	DPSLabelTextbox:SetBackColor(color["white"]);
+	dpsLabel = Turbine.UI.Label();
+	dpsLabel:SetParent(optionsPanel);
+	dpsLabel:SetText("DPS Prefix");
+	dpsLabel:SetForeColor(color["golden"]);
+	dpsLabel:SetSize(200, 30);
+	dpsLabel:SetPosition(50, 180);
+	dpsLabelTextbox = Turbine.UI.TextBox();
+	dpsLabelTextbox:SetParent(optionsPanel);
+	dpsLabelTextbox:SetSize(240, 20);
+	dpsLabelTextbox:SetPosition(50, 200);
+	dpsLabelTextbox:SetText(textLabel);
+	dpsLabelTextbox:SetMultiline(false);
+	dpsLabelTextbox:SetTextAlignment(Turbine.UI.ContentAlignment.MiddleLeft);
+	dpsLabelTextbox:SetFont(Turbine.UI.Lotro.Font.Verdana14);
+	dpsLabelTextbox:SetForeColor(color["black"]);
+	dpsLabelTextbox:SetBackColor(color["white"]);
 
 	-- Save settings button --
 	saveSettingsButton = Turbine.UI.Lotro.Button();
@@ -85,11 +85,12 @@ plugin.GetOptionsPanel = function(self)
 	saveSettingsButton:SetZOrder(100);
 	saveSettingsButton.Click = function( sender, args)
 		isLocked = lockPositionCheckbox:IsChecked();
-		textLabel = DPSLabelTextbox:GetText();
+		textLabel = dpsLabelTextbox:GetText();
 		fontSize = fontSizeDropdown:GetValue();
-		GroupDPSWindow.UpdateFontSize();
-		saveData();
-		notification("Settings have been saved!");
+		groupDPSWindow.UpdateFontSize();
+		SaveSettings();
+		groupDPSWindow:UpdateTarget(localPlayer:GetTarget())
+		Notification("Settings have been saved!");
 	end
 
 
@@ -114,10 +115,10 @@ plugin.GetOptionsPanel = function(self)
 	resetPositionButton:SetPosition(50, 400);
 	resetPositionButton:SetZOrder(100);
 	resetPositionButton.Click = function( sender, args)
-		leftPos = (screenWidth / 2) - 50;
+		leftPos = (screenWidth / 2) - (groupDPSWindow:GetWidth() / 2);
 		topPos = screenHeight / 2;
-		GroupDPSWindow:SetPosition(leftPos, topPos);
-		notification("Position has been resetted.");
+		groupDPSWindow:SetPosition(leftPos, topPos);
+		Notification("Position has been resetted.");
 	end
 
 

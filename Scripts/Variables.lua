@@ -1,5 +1,6 @@
 pluginName = "GroupDPS";
 saveFileName = "GroupDPS_Settings";
+savePositionFileName = "GroupDPS_Position";
 
 -- Notification color codes --
 rgb = {
@@ -34,7 +35,7 @@ localPlayer = Turbine.Gameplay.LocalPlayer:GetInstance()
 screenWidth, screenHeight = Turbine.UI.Display:GetSize();
 
 -- Settings
-leftPos = (screenWidth / 2) - 50;
+leftPos = (screenWidth / 2);
 topPos = screenHeight / 2;
 fontSize = "14"
 isLocked = false

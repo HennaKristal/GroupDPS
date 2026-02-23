@@ -1,6 +1,6 @@
-GroupDPSFrame = class(Turbine.UI.Window)
+groupDPSFrame = class(Turbine.UI.Window)
 
- function GroupDPSFrame:Constructor()
+ function groupDPSFrame:Constructor()
 
 	Turbine.UI.Window.Constructor(self)
 
@@ -62,7 +62,7 @@ GroupDPSFrame = class(Turbine.UI.Window)
 end
 
 
-function GroupDPSFrame:KeyDown(args)
+function groupDPSFrame:KeyDown(args)
     -- Toggle visibility when HUD is toggled --
     if (args.Action == 268435635) then
         self:SetVisible(not self:IsVisible());
@@ -70,21 +70,21 @@ function GroupDPSFrame:KeyDown(args)
 end
 
 
-function GroupDPSFrame:UpdateFontSize()
-	if (fontSize == "10") then GroupDPSWindow.raidDPSLabel:SetFont(Turbine.UI.Lotro.Font.Verdana10);
-	elseif (fontSize == "12") then GroupDPSWindow.raidDPSLabel:SetFont(Turbine.UI.Lotro.Font.Verdana12);
-	elseif (fontSize == "14") then GroupDPSWindow.raidDPSLabel:SetFont(Turbine.UI.Lotro.Font.Verdana14);
-	elseif (fontSize == "16") then GroupDPSWindow.raidDPSLabel:SetFont(Turbine.UI.Lotro.Font.Verdana16);
-	elseif (fontSize == "18") then GroupDPSWindow.raidDPSLabel:SetFont(Turbine.UI.Lotro.Font.Verdana18);
-	elseif (fontSize == "20") then GroupDPSWindow.raidDPSLabel:SetFont(Turbine.UI.Lotro.Font.Verdana20);
-	elseif (fontSize == "22") then GroupDPSWindow.raidDPSLabel:SetFont(Turbine.UI.Lotro.Font.Verdana22);
-	elseif (fontSize == "23") then GroupDPSWindow.raidDPSLabel:SetFont(Turbine.UI.Lotro.Font.Verdana23);
-	else GroupDPSWindow.raidDPSLabel:SetFont(Turbine.UI.Lotro.Font.Verdana16);
+function groupDPSFrame:UpdateFontSize()
+	if (fontSize == "10") then groupDPSWindow.raidDPSLabel:SetFont(Turbine.UI.Lotro.Font.Verdana10);
+	elseif (fontSize == "12") then groupDPSWindow.raidDPSLabel:SetFont(Turbine.UI.Lotro.Font.Verdana12);
+	elseif (fontSize == "14") then groupDPSWindow.raidDPSLabel:SetFont(Turbine.UI.Lotro.Font.Verdana14);
+	elseif (fontSize == "16") then groupDPSWindow.raidDPSLabel:SetFont(Turbine.UI.Lotro.Font.Verdana16);
+	elseif (fontSize == "18") then groupDPSWindow.raidDPSLabel:SetFont(Turbine.UI.Lotro.Font.Verdana18);
+	elseif (fontSize == "20") then groupDPSWindow.raidDPSLabel:SetFont(Turbine.UI.Lotro.Font.Verdana20);
+	elseif (fontSize == "22") then groupDPSWindow.raidDPSLabel:SetFont(Turbine.UI.Lotro.Font.Verdana22);
+	elseif (fontSize == "23") then groupDPSWindow.raidDPSLabel:SetFont(Turbine.UI.Lotro.Font.Verdana23);
+	else groupDPSWindow.raidDPSLabel:SetFont(Turbine.UI.Lotro.Font.Verdana16);
 	end
 end
 
 
-function GroupDPSFrame:UpdateTarget(newTarget)
+function groupDPSFrame:UpdateTarget(newTarget)
 
 	if self.TARGET then
 		RemoveCallback(self.TARGET, "MoraleChanged", MoraleChangedHandler)

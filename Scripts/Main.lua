@@ -1,8 +1,11 @@
 function init()
-	loadData()
-	GroupDPSWindow = GroupDPSFrame()
-	GroupDPSWindow.UpdateFontSize();
-	GroupDPSWindow:SetPosition(leftPos, topPos);
+    groupDPSWindow = groupDPSFrame()
+
+	LoadSettings()
+	groupDPSWindow.UpdateFontSize();
+
+    LoadPosition()
+    groupDPSWindow:SetPosition(leftPos, topPos);
 end
 
 init();
@@ -47,17 +50,17 @@ end
 
 function MoraleChangedHandler(sender, args)
 
-    local CurrentFrame = GroupDPSWindow
+    local currentFrame = groupDPSWindow
 
-    if not CurrentFrame.TARGET then
+    if not currentFrame.TARGET then
         return
     end
 
-    if (CurrentFrame.TARGET:GetMorale() <= 0 or CurrentFrame.TARGET:GetMaxMorale() <= 0) then
+    if (currentFrame.TARGET:GetMorale() <= 0 or currentFrame.TARGET:GetMaxMorale() <= 0) then
         return
     end
 
-    if CurrentFrame.TARGET:GetMorale() == CurrentFrame.TARGET:GetMaxMorale() then
+    if currentFrame.TARGET:GetMorale() == currentFrame.TARGET:GetMaxMorale() then
         return
     end
 
@@ -71,10 +74,10 @@ end
 
 
 function ResetRaidDPS(sender, args)
-    local CurrentFrame = GroupDPSWindow
+    local currentFrame = groupDPSWindow
     groupDPSCalculationStarted = true;
-    PREVIOUS_MORALE = CurrentFrame.TARGET:GetMorale()
-    PREVIOUS_TIMESTAMP = Turbine.Engine:GetGameTime()
+    previousMorale = currentFrame.TARGET:GetMorale()
+    previousTimestamp = Turbine.Engine:GetGameTime()
     DPS_1 = 0;
     DPS_2 = 0;
     DPS_3 = 0;
@@ -85,12 +88,12 @@ end
 
 function CalculateGroupDPS(sender, args)
 
-    local CurrentFrame = GroupDPSWindow
-    local currentMorale = CurrentFrame.TARGET:GetMorale()
+    local currentFrame = groupDPSWindow
+    local currentMorale = currentFrame.TARGET:GetMorale()
     local currentTimestamp = Turbine.Engine:GetGameTime()
-    local timeDelta = currentTimestamp - PREVIOUS_TIMESTAMP
+    local timeDelta = currentTimestamp - previousTimestamp
 
-    if currentMorale > PREVIOUS_MORALE then
+    if currentMorale > previousMorale then
         ResetRaidDPS()
         return
     end
@@ -99,7 +102,7 @@ function CalculateGroupDPS(sender, args)
         return
     end
 
-    local dpsValue = (PREVIOUS_MORALE - currentMorale) / timeDelta
+    local dpsValue = (previousMorale - currentMorale) / timeDelta
 
     if DPS_1 == 0 then
         DPS_1 = dpsValue
@@ -151,13 +154,13 @@ function CalculateGroupDPS(sender, args)
         local averageDps = total / count
 
         
-        CurrentFrame.raidDPSLabel:SetText(textLabel .. " " .. FormatDPS(averageDps));
+        currentFrame.raidDPSLabel:SetText(textLabel .. " " .. FormatDPS(averageDps));
     else
-        CurrentFrame.raidDPSLabel:SetText("")
+        currentFrame.raidDPSLabel:SetText("")
     end
 
-    PREVIOUS_MORALE = currentMorale
-    PREVIOUS_TIMESTAMP = currentTimestamp
+    previousMorale = currentMorale
+    previousTimestamp = currentTimestamp
 end
 
 
