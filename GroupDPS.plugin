@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<Plugin>
+	<Information>
+		<Name>GroupDPS</Name>
+		<Author>HennaKristal</Author>
+		<Version>1.0.0</Version>
+		<Image>GroupDPS/Images/icon.tga</Image>
+		<Description>Display estimated group DPS numbers.</Description>
+	</Information>
+	<Package>GroupDPS.Compiler</Package>
+	<Configuration Apartment="GroupDPS" />
+</Plugin>
