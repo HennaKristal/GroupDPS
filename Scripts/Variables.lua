@@ -1,13 +1,13 @@
-pluginName = "GroupDPS";
-saveFileName = "GroupDPS_Settings";
-savePositionFileName = "GroupDPS_Position";
+pluginName = "GroupDPS"
+saveFileName = "GroupDPS_Settings"
+savePositionFileName = "GroupDPS_Position"
 
 -- Notification color codes --
 rgb = {
     pluginName = "<rgb=#DAA520>",
     error = "<rgb=#FF0000>",
     clear = "</rgb>"
-};
+}
 
 -- Turbine colors --
 color = {
@@ -28,24 +28,22 @@ color = {
     blue = Turbine.UI.Color(0, 0, 1),
     lightblue = Turbine.UI.Color(0, 1, 1),
     darkblue = Turbine.UI.Color(0, 0.25, 0.5),
-};
+}
 
 -- References
 localPlayer = Turbine.Gameplay.LocalPlayer:GetInstance()
-screenWidth, screenHeight = Turbine.UI.Display:GetSize();
+screenWidth, screenHeight = Turbine.UI.Display:GetSize()
 
 -- Settings
-leftPos = (screenWidth / 2);
-topPos = screenHeight / 2;
+leftPos = (screenWidth / 2)
+topPos = screenHeight / 2
 fontSize = "14"
 isLocked = false
 textLabel = "DPS:"
 
 -- private variables
 groupDPSCalculationStarted = false
-DPSMinUpdateTime = 2.5
-DPS_1 = 0;
-DPS_2 = 0;
-DPS_3 = 0;
-DPS_4 = 0;
-DPS_5 = 0;
+holdDurationSeconds = 12.0
+minDPStime = 1.0
+moraleSamples = {}
+currentTarget = nil

@@ -1,66 +1,45 @@
-function init()
-    groupDPSWindow = groupDPSFrame()
+function UpdateTarget(newTarget)
 
-	LoadSettings()
-	groupDPSWindow.UpdateFontSize();
+	if currentTarget then
+		RemoveCallback(currentTarget, "MoraleChanged", MoraleChangedHandler)
+		RemoveCallback(currentTarget, "BaseMaxMoraleChanged", MoraleChangedHandler)
+		RemoveCallback(currentTarget, "MaxMoraleChanged", MoraleChangedHandler)
+	end
 
-    LoadPosition()
-    groupDPSWindow:SetPosition(leftPos, topPos);
-end
+	currentTarget = newTarget
+	groupDPSCalculationStarted = false
 
-init();
+	groupDPSFrame.raidDPSLabel:SetText(textLabel .. " 0")
 
-
-function AddCallback(object, event, callback)
-    if (object[event] == nil) then
-        object[event] = callback;
-    else
-        if (type(object[event]) == "table") then
-            table.insert(object[event], callback);
-        else
-            object[event] = {object[event], callback};
-        end
-    end
-    return callback;
-end
-
-function RemoveCallback(object, event, callback)
-    if (object[event] == callback) then
-        object[event] = nil;
-    else
-        if (type(object[event]) == "table") then
-            local size = table.getn(object[event]);
-            for i = 1, size do
-                if (object[event][i] == callback) then
-                    table.remove(object[event], i);
-                    break;
-                end
-            end
-        end
-    end
-end
-
-
-function TargetChangeHandler(sender, args)
-    for key, frame in pairs (TargetFrames) do
-        TargetFrame.UpdateTarget(frame)
-    end
+	if newTarget then
+		if newTarget.GetLevel ~= nil and newTarget:GetLevel() > 1 then
+			AddCallback(newTarget, "MoraleChanged", MoraleChangedHandler)
+			AddCallback(newTarget, "BaseMaxMoraleChanged", MoraleChangedHandler)
+			AddCallback(newTarget, "MaxMoraleChanged", MoraleChangedHandler)
+			MoraleChangedHandler(newTarget)
+		else
+			groupDPSFrame.raidDPSLabel:SetText("")
+		end
+	else
+		groupDPSFrame.raidDPSLabel:SetText("")
+	end
 end
 
 
 function MoraleChangedHandler(sender, args)
 
-    local currentFrame = groupDPSWindow
-
-    if not currentFrame.TARGET then
+    if not currentTarget then
         return
     end
 
-    if (currentFrame.TARGET:GetMorale() <= 0 or currentFrame.TARGET:GetMaxMorale() <= 0) then
+    local currentMorale = currentTarget:GetMorale()
+    local maxMorale = currentTarget:GetMaxMorale()
+
+    if (currentMorale <= 0 or maxMorale <= 0) then
         return
     end
 
-    if currentFrame.TARGET:GetMorale() == currentFrame.TARGET:GetMaxMorale() then
+    if currentMorale == maxMorale then
         return
     end
 
@@ -69,107 +48,74 @@ function MoraleChangedHandler(sender, args)
         return
     end
 
-    CalculateGroupDPS(sender, args)
+    UpdateMoraleTable()
+    CalculateGroupDPS()
 end
 
 
-function ResetRaidDPS(sender, args)
-    local currentFrame = groupDPSWindow
-    groupDPSCalculationStarted = true;
-    previousMorale = currentFrame.TARGET:GetMorale()
-    previousTimestamp = Turbine.Engine:GetGameTime()
-    DPS_1 = 0;
-    DPS_2 = 0;
-    DPS_3 = 0;
-    DPS_4 = 0;
-    DPS_5 = 0;
+function ResetRaidDPS()
+    groupDPSCalculationStarted = true
+    moraleSamples = {[Turbine.Engine:GetGameTime()] = currentTarget:GetMorale()}
 end
 
 
-function CalculateGroupDPS(sender, args)
+function UpdateMoraleTable()
+    local currentTime = Turbine.Engine:GetGameTime()
 
-    local currentFrame = groupDPSWindow
-    local currentMorale = currentFrame.TARGET:GetMorale()
+    for timestamp, _ in pairs(moraleSamples) do
+        if currentTime - timestamp > holdDurationSeconds then
+            moraleSamples[timestamp] = nil
+        end
+    end
+
+    moraleSamples[currentTime] = currentTarget:GetMorale()
+end
+
+
+function CalculateGroupDPS()
+    local highestMorale = nil
+    local highestMoraleTimestamp = nil
+    local currentMorale = currentTarget:GetMorale()
     local currentTimestamp = Turbine.Engine:GetGameTime()
-    local timeDelta = currentTimestamp - previousTimestamp
+    local dpsValue = 0
 
-    if currentMorale > previousMorale then
-        ResetRaidDPS()
-        return
+    -- Find highest morale from samples
+    for time, morale in pairs(moraleSamples) do
+        if highestMorale == nil or morale > highestMorale then
+            highestMorale = morale
+            highestMoraleTimestamp = time
+        end
     end
 
-    if timeDelta < DPSMinUpdateTime then
-        return
+    -- Calculate DPS
+    if highestMorale ~= nil then
+        local timeDifference = math.abs(currentTimestamp - highestMoraleTimestamp)
+        if timeDifference > minDPStime and highestMorale > currentMorale then
+            dpsValue = (highestMorale - currentMorale) / timeDifference
+        end
     end
 
-    local dpsValue = (previousMorale - currentMorale) / timeDelta
-
-    if DPS_1 == 0 then
-        DPS_1 = dpsValue
-    elseif DPS_2 == 0 then
-        DPS_2 = dpsValue
-    elseif DPS_3 == 0 then
-        DPS_3 = dpsValue
-    elseif DPS_4 == 0 then
-        DPS_4 = dpsValue
-    elseif DPS_5 == 0 then
-        DPS_5 = dpsValue
-    else
-        DPS_1 = DPS_2
-        DPS_2 = DPS_3
-        DPS_3 = DPS_4
-        DPS_4 = DPS_5
-        DPS_5 = dpsValue
-    end
-
-    local total = 0
-    local count = 0
-
-    if DPS_1 > 0 then
-        total = total + DPS_1
-        count = count + 1
-    end
-
-    if DPS_2 > 0 then
-        total = total + DPS_2
-        count = count + 1
-    end
-
-    if DPS_3 > 0 then
-        total = total + DPS_3
-        count = count + 1
-    end
-
-    if DPS_4 > 0 then
-        total = total + DPS_4
-        count = count + 1
-    end
-
-    if DPS_5 > 0 then
-        total = total + DPS_5
-        count = count + 1
-    end
-
-    if count > 0 then
-        local averageDps = total / count
-
-        
-        currentFrame.raidDPSLabel:SetText(textLabel .. " " .. FormatDPS(averageDps));
-    else
-        currentFrame.raidDPSLabel:SetText("")
-    end
-
-    previousMorale = currentMorale
-    previousTimestamp = currentTimestamp
+    groupDPSFrame.raidDPSLabel:SetText(textLabel .. " " .. FormatDPS(dpsValue))
+    groupDPSFrame.updatelimiter = 0;
 end
 
 
 function FormatDPS(value)
     if value < 1000 then
         return tostring(math.floor(value))
-    elseif value > 1000000 then
-        return string.format("%.2f", value / 1000000) .. "M"
-    else
+    end
+
+    if value < 10000 then
+        return string.format("%.1fK", value / 1000)
+    end
+
+    if value < 1000000 then
         return tostring(math.floor(value / 1000)) .. "K"
     end
+
+    if value < 10000000 then
+        return string.format("%.1fM", value / 1000000)
+    end
+
+    return tostring(math.floor(value / 1000000)) .. "M"
 end

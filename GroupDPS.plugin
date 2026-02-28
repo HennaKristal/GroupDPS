@@ -3,7 +3,7 @@
 	<Information>
 		<Name>GroupDPS</Name>
 		<Author>HennaKristal</Author>
-		<Version>1.0.0</Version>
+		<Version>1.1.0</Version>
 		<Image>GroupDPS/Images/icon.tga</Image>
 		<Description>Display estimated group DPS</Description>
 	</Information>
